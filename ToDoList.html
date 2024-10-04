@@ -3,9 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Advanced Todo List</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <p>Sample hello</p>
+  <div class="main-container">
+    <!-- Sidebar for Categories -->
+    <div class="sidebar">
+      <h2>Categories</h2>
+      <input type="text" id="categoryInput" placeholder="New Category">
+      <button onclick="addCategory()">Add</button>
+      <ul id="categoryList"></ul>
+    </div>
+
+    <!-- Main Task Section -->
+    <div class="task-section">
+      <h1>Advanced Todo List</h1>
+      <input type="text" id="taskInput" placeholder="New Task">
+      <input type="date" id="dueDate">
+      <select id="categorySelect">
+        <option value="">Select Category</option>
+      </select>
+      <button onclick="addTask()">Add Task</button>
+      <h3>Tasks List</h3>
+      <ul id="taskList"></ul>
+    </div>
+
+  
+    <div class="analytics">
+      <h2>Analytics</h2>
+      
+    </div>
+  </div>
+
+  <script src="ToDoList.js"></script>
 </body>
 </html>
