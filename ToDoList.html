@@ -7,34 +7,51 @@
   <link rel="stylesheet" href="ToDoList.css">
 </head>
 <body>
-  <div class="main-container">
+<div id="app">
 
-    <div class="sidebar">
+    <aside id="Category-sidebar" class="Category-sidebar">
       <h2>Categories</h2>
-      <input type="text" id="categoryInput" placeholder="New Category">
-      <button onclick="addCategory()">Add</button>
-      <ul id="categoryList"></ul>
-    </div>
+      <form id="category-form" class="category-form">
+        <input type="text" id="categoryInput" placeholder="New Category">
+        <button class="add-category" type="submit">Add</button>
+      </form>
+
+      <h2>Category List</h2>
+      <div id="categoryList"></div>
+    </aside>
 
    
-    <div class="task-section">
+    <main>
       <h1>Advanced Todo List</h1>
-      <input type="text" id="taskInput" placeholder="New Task">
-      <input type="date" id="dueDate">
-      <select id="categorySelect">
-        <option value="">Select Category</option>
-      </select>
-      <button onclick="addTask()">Add Task</button>
-      <h3>Tasks List</h3>
-      <ul id="taskList"></ul>
-    </div>
+      <form id="task-form" class="task-form">
+       <div class="task-name">
+          <div class="form-group">
+            <label for="task-input">Task:</label>
+            <input type="text" id="task-input" placeholder="New Task">
+          </div>
+          <div class="form-group">
+            <label for="due-date-input">Due Date</label>
+            <input type="date" id="due-date-input">
+          </div>
+       </div>
+       <div class="form-group">
+        <label for="Category-select">Categories</label>
+        <select id="Category-select" class="Category-select" multiple>
+
+        </select>
+       </div>
+       <button type="submit">Add Task</button>
+    </form>
+      <h2 class="task-label">Tasks List</h2>
+      <div id="taskList"></div>
+    </main>
 
   
-    <div class="analytics">
+    <aside class="analytics-sidebar">
       <h2>Analytics</h2>
-      
-    </div>
-  </div>
+      <div id="category-stats"></div>
+    </aside>
+</div>
 
   <script src="ToDoList.js"></script>
 </body>
