@@ -57,6 +57,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    //new update meron na tasklist
+    //needed ff:
+    //checkbox 
+    //update button
+    //analytics
     function loadtask() {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         taskList.innerHTML = "";
