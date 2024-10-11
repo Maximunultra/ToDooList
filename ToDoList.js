@@ -2,12 +2,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const categoryForm = document.getElementById("category-form");
     const categoryInput = document.getElementById("categoryInput");
     const categoryList = document.getElementById("categoryList");
-    const taskform = document.getElementById("task-form");
-    const taskinput = document.getElementById("task-input");
+    const taskForm = document.getElementById("task-form");
+    const taskInput = document.getElementById("task-input");
     const dueDateInput = document.getElementById("due-date-input");
     const categorySelect = document.getElementById("Category-select");
     const taskList = document.getElementById("taskList");
+    const analyticsOutput = document.getElementById("analytics-output");
 
+    // Load categories
     function loadCategories() {
         const categories = JSON.parse(localStorage.getItem("categories")) || [];
         categoryList.innerHTML = "";
@@ -25,9 +27,13 @@ document.addEventListener("DOMContentLoaded", function () {
             deleteButton.classList.add("delete-category");
 
             deleteButton.addEventListener("click", function () {
-                categories.splice(index, 1);
-                localStorage.setItem("categories", JSON.stringify(categories));
-                loadCategories();
+                const confirmDelete = confirm(`Are you sure you want to delete the category: "${category}"?`);
+                if (confirmDelete) {
+                    categories.splice(index, 1);
+                    localStorage.setItem("categories", JSON.stringify(categories));
+                    loadCategories();
+                    updateAnalytics();
+                }
             });
 
             categoryItem.appendChild(categoryName);
@@ -57,40 +63,36 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    //new update meron na tasklist
-    //needed ff:
-    //checkbox 
-    //update button
-    //analytics
-    function loadtask() {
+    function loadTasks() {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         taskList.innerHTML = "";
-        //pang dort ng date para prioty nya yung malapit na duedate
         tasks.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
-
         tasks.forEach((task, index) => {
             const taskItem = document.createElement("div");
             taskItem.classList.add('task-item');
+
             taskItem.innerHTML = `
-                <strong>Name: ${task.name} Due: ${task.dueDate}</strong>
+                <input type="checkbox" class="complete-task" data-index="${index}" ${task.completed ? 'checked' : ''}>
+                <strong>Name: ${task.name} | Due: ${task.dueDate}</strong>
                 <div>Category: ${task.categories.join(", ")}</div>
                 <button class="delete-task" data-index="${index}">Delete</button>
             `;
+
             taskList.appendChild(taskItem);
         });
 
-        //nilagayan ko muna delete button kac sa pag testing para hindi mapuno ng task ang local storage dapat ito ay update/edit button
         const deleteButtons = document.querySelectorAll(".delete-task");
         deleteButtons.forEach(button => {
             button.addEventListener("click", function () {
                 const index = this.getAttribute("data-index");
-                deleteTask(index);
+                const confirmDelete = confirm("Are you sure you want to delete this task?");
+                if (confirmDelete) {
+                    deleteTask(index);
+                }
             });
         });
-
     }
 
-    
     function saveTask(task) {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         tasks.push(task);
@@ -101,16 +103,23 @@ document.addEventListener("DOMContentLoaded", function () {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         tasks.splice(index, 1);
         localStorage.setItem("tasks", JSON.stringify(tasks));
-        loadtask();
+        loadTasks();
     }
 
-    taskform.addEventListener("submit", function (event) {
+    function toggleTaskCompletion(index, isCompleted) {
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        tasks[index].completed = isCompleted;
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        updateAnalytics();
+    }
+
+    taskForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        const newTask = taskinput.value.trim();
+        const newTask = taskInput.value.trim();
         const dueDate = dueDateInput.value;
         const selectedCategories = Array.from(categorySelect.selectedOptions).map(option => option.value);
 
-        if (newTask && dueDate) {
+        if (newTask) {
             const task = {
                 name: newTask,
                 dueDate: dueDate,
@@ -119,11 +128,10 @@ document.addEventListener("DOMContentLoaded", function () {
             };
 
             saveTask(task);
-            loadtask();
-            taskform.reset();
+            loadTasks();
+            taskForm.reset();
         }
     });
-
     loadCategories();
-    loadtask();
+    loadTasks();
 });
