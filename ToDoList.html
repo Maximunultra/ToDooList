@@ -1,41 +1,177 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advanced Todo List</title>
-  <link rel="stylesheet" href="ToDoList.css">
-</head>
-<body>
-  <div class="main-container">
 
-    <div class="sidebar">
-      <h2>Categories</h2>
-      <input type="text" id="categoryInput" placeholder="New Category">
-      <button onclick="addCategory()">Add</button>
-      <ul id="categoryList"></ul>
-    </div>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-   
-    <div class="task-section">
-      <h1>Advanced Todo List</h1>
-      <input type="text" id="taskInput" placeholder="New Task">
-      <input type="date" id="dueDate">
-      <select id="categorySelect">
-        <option value="">Select Category</option>
-      </select>
-      <button onclick="addTask()">Add Task</button>
-      <h3>Tasks List</h3>
-      <ul id="taskList"></ul>
-    </div>
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  height: 100%; 
+}
 
-  
-    <div class="analytics">
-      <h2>Analytics</h2>
-      
-    </div>
-  </div>
+#app {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  height: 100vh; 
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(66, 1, 1, 0.1);
+}
 
-  <script src="ToDoList.js"></script>
-</body>
-</html>
+/* Category Sidebar */
+
+.Category-sidebar {
+  width: 300px;
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  position: relative; 
+}
+
+.Category-sidebar h2 {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+#category-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+#categoryInput{
+  flex-grow: 1;
+  padding: 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-category {
+  padding: 8px 8px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.add-category:hover {
+  background-color: #0056b3;
+}
+
+#categoryList {
+ margin-top: 10px;
+}
+
+.category-item{
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);;
+}
+
+.delete-category{
+  padding: 4px 4px;
+  background-color: #f81606;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Task Form */
+
+.task-form {
+  width: 500px;
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  height: 100%; /* Set the height to 100% */
+}
+
+.task-name {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+#task-input, #due-date-input {
+  width: 100%;
+  height: 40px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#Category-select {
+  width: 100%;
+  height: 40px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Task List */
+
+#taskList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  height: calc(100% - 120px); /* Set the height to 100% minus the height of the form and heading */
+  overflow-y: auto; /* Add a scrollbar if the content is too long */
+}
+
+#taskList li {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+#taskList li:last-child {
+  border-bottom: none;
+}
+
+/* Analytics Sidebar */
+
+.analytics-sidebar {
+  width: 300px;
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  height: 100%; /* Set the height to 100% */
+}
+
+#category-stats {
+  padding: 20px;
+  height: calc(100% - 60px); /* Set the height to 100% minus the height of the heading */
+  overflow-y: auto; /* Add a scrollbar if the content is too long */
+}
