@@ -55,6 +55,28 @@
   </aside>
   
 </div>
+
+<!-- Edit Task Modal -->
+<div id="editTaskModal" class="modal">
+  <div class="modal-content">
+      <span class="close" id="modalClose">&times;</span>
+      <h2>Edit Task</h2>
+      <form id="editTaskForm">
+          <label for="edit-task-input">Task Name:</label>
+          <input type="text" id="edit-task-input" required>
+          <br>
+          <label for="edit-due-date-input">Due Date:</label>
+          <input type="date" id="edit-due-date-input" required>
+          <br>
+          <label for="edit-category-select">Categories:</label>
+          <select id="edit-category-select" multiple></select>
+          <br>
+          <button type="submit">Save</button>
+          <button type="button" id="modalCancel">Cancel</button>
+      </form>
+  </div>
+</div>
+
   
   <script src="ToDoList.js"></script>
 </body>

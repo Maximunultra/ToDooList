@@ -11,7 +11,117 @@ document.addEventListener("DOMContentLoaded", function () {
     const chartCanvas = document.getElementById("categoryCompletionChart");
     let categoryChart;
 
-    // Load categories
+    // Edit Task Modal elements
+    const editTaskModal = document.getElementById("editTaskModal");
+    const editTaskForm = document.getElementById("editTaskForm");
+    const editTaskInput = document.getElementById("edit-task-input");
+    const editDueDateInput = document.getElementById("edit-due-date-input");
+    const editCategorySelect = document.getElementById("edit-category-select");
+    const modalClose = document.getElementById("modalClose");
+    const modalCancel = document.getElementById("modalCancel");
+
+    let editingTaskIndex = null; // Store the index of the task being edited
+
+    // Function to open the edit modal
+    function openEditModal(task, index) {
+        editingTaskIndex = index; // Set the index of the task to be edited
+        editTaskInput.value = task.name;
+        editDueDateInput.value = task.dueDate;
+        editCategorySelect.innerHTML = ""; // Clear existing options
+        const categories = JSON.parse(localStorage.getItem("categories")) || [];
+
+        // Populate categories
+        categories.forEach(category => {
+            const option = document.createElement("option");
+            option.value = category;
+            option.textContent = category;
+            option.selected = task.categories.includes(category); // Mark as selected if it's in the task's categories
+            editCategorySelect.appendChild(option);
+        });
+
+        editTaskModal.style.display = "block"; // Show the modal
+    }
+
+    // Function to close the edit modal
+    function closeEditModal() {
+        editTaskModal.style.display = "none"; // Hide the modal
+        editingTaskIndex = null; // Reset the index
+    }
+
+    // Event listener for the modal close button
+    modalClose.addEventListener("click", closeEditModal);
+    modalCancel.addEventListener("click", closeEditModal);
+
+    // Event listener for the edit task form submission
+    editTaskForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        const updatedTask = {
+            name: editTaskInput.value.trim(),
+            dueDate: editDueDateInput.value,
+            categories: Array.from(editCategorySelect.selectedOptions).map(option => option.value),
+            completed: false // Keep the completion state as false, or modify as needed
+        };
+
+        const confirmEdit = confirm("Are you sure you want to save these changes?");
+        if (confirmEdit && editingTaskIndex !== null) {
+            const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            tasks[editingTaskIndex] = updatedTask; // Update the task
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+            loadTasks(); // Reload the task list
+            closeEditModal(); // Close the modal
+            updateAnalytics(); // Update analytics
+        }
+    });
+
+    // Load tasks function
+    function loadTasks() {
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        taskList.innerHTML = "";
+        tasks.sort((a, b) => {
+            if (a.completed === b.completed) {
+                return new Date(a.dueDate) - new Date(b.dueDate);
+            }
+            return a.completed - b.completed;
+        });
+
+        tasks.forEach((task, index) => {
+            const taskItem = document.createElement("div");
+            taskItem.classList.add('task-item');
+
+            if (task.completed) {
+                taskItem.classList.add('completed-task');
+            }
+
+            taskItem.innerHTML = `
+                <input type="checkbox" class="complete-task" data-index="${index}" ${task.completed ? 'checked' : ''}>
+                <strong>Name: ${task.name} | Due: ${task.dueDate}</strong>
+                <div>Category: ${task.categories.join(", ")}</div>
+                <button class="edit-task" data-index="${index}">Edit</button>
+            `;
+
+            taskList.appendChild(taskItem);
+        });
+
+        const checkboxes = document.querySelectorAll(".complete-task");
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener("change", function () {
+                const index = this.getAttribute("data-index");
+                toggleTaskCompletion(index, this.checked);
+            });
+        });
+
+        const editButtons = document.querySelectorAll(".edit-task");
+        editButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const index = this.getAttribute("data-index");
+                const task = JSON.parse(localStorage.getItem("tasks"))[index];
+                openEditModal(task, index); // Open the modal with the selected task
+            });
+        });
+
+    }
+
+    // Load categories function
     function loadCategories() {
         const categories = JSON.parse(localStorage.getItem("categories")) || [];
         categoryList.innerHTML = "";
@@ -65,67 +175,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    function loadTasks() {
-        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        taskList.innerHTML = "";
-        tasks.sort((a, b) => {
-            if (a.completed === b.completed) {
-                return new Date(a.dueDate) - new Date(b.dueDate);
-            }
-            return a.completed - b.completed;
-        });
-
-        tasks.forEach((task, index) => {
-            const taskItem = document.createElement("div");
-            taskItem.classList.add('task-item');
-
-            // Add the 'completed-task' class if the task is completed
-            if (task.completed) {
-                taskItem.classList.add('completed-task');
-            }
-
-            taskItem.innerHTML = `
-                <input type="checkbox" class="complete-task" data-index="${index}" ${task.completed ? 'checked' : ''}>
-                <strong>Name: ${task.name} | Due: ${task.dueDate}</strong>
-                <div>Category: ${task.categories.join(", ")}</div>
-                <button class="delete-task" data-index="${index}">Delete</button>
-            `;
-
-            taskList.appendChild(taskItem);
-        });
-
-        const checkboxes = document.querySelectorAll(".complete-task");
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener("change", function () {
-                const index = this.getAttribute("data-index");
-                toggleTaskCompletion(index, this.checked);
-            });
-        });
-
-        const deleteButtons = document.querySelectorAll(".delete-task");
-        deleteButtons.forEach(button => {
-            button.addEventListener("click", function () {
-                const index = this.getAttribute("data-index");
-                const confirmDelete = confirm("Are you sure you want to delete this task?");
-                if (confirmDelete) {
-                    deleteTask(index);
-                }
-            });
-        });
-    }
-
+    // Task management functions
     function saveTask(task) {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         tasks.push(task);
         localStorage.setItem("tasks", JSON.stringify(tasks));
-    }
-
-    function deleteTask(index) {
-        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        tasks.splice(index, 1);
-        localStorage.setItem("tasks", JSON.stringify(tasks));
-        loadTasks();
-        updateAnalytics();
     }
 
     function toggleTaskCompletion(index, isCompleted) {
@@ -157,6 +211,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // Analytics and chart functions
     function updateAnalytics() {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         const categories = JSON.parse(localStorage.getItem("categories")) || [];

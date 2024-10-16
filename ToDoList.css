@@ -218,3 +218,100 @@ button[type="submit"]:hover {
   overflow-y: auto; /* Add a scrollbar if the content is too long */
 }
 
+
+
+
+
+/* Modal styles */
+/* Basic modal styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1000; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+}
+
+/* Modal content */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+  max-width: 500px; /* Limit the width */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+}
+
+/* Close button */
+.close {
+  color: #aaa;
+  float: right; /* Align close button to the right */
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Headings */
+h2 {
+  margin: 0 0 20px 0; /* Margin below heading */
+  font-family: 'Arial', sans-serif; /* Font style */
+}
+
+/* Form styles */
+label {
+  font-weight: bold; /* Bold labels */
+  margin-top: 10px; /* Space above labels */
+}
+
+input[type="text"],
+input[type="date"],
+select {
+  width: 100%; /* Full width */
+  padding: 10px; /* Space inside */
+  margin: 10px 0; /* Space between elements */
+  border: 1px solid #ccc; /* Light border */
+  border-radius: 4px; /* Rounded corners */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+/* Button styles */
+button {
+  background-color: #4CAF50; /* Green background */
+  color: white; /* White text */
+  border: none; /* No border */
+  padding: 10px 15px; /* Padding inside button */
+  text-align: center; /* Center text */
+  text-decoration: none; /* No underline */
+  display: inline-block; /* Align buttons side by side */
+  font-size: 16px; /* Text size */
+  margin: 10px 0; /* Space between buttons */
+  cursor: pointer; /* Pointer cursor on hover */
+  border-radius: 4px; /* Rounded corners */
+  transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+#modalCancel {
+  background-color: #f44336; /* Red background for cancel button */
+}
+
+#modalCancel:hover {
+  background-color: #d32f2f; /* Darker red on hover */
+}
+
+
