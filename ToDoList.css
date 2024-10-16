@@ -192,16 +192,12 @@ button[type="submit"]:hover {
   color: #6c757d;
   font-size: 16px;
 }
-
-.edit-task {
-  padding: 6px 12px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 14px;
+.completed-task {
+  text-decoration: line-through;
+  color: #252323; /* Optional: makes the text appear faded */
+  background-color: #f5a6a6;
 }
+
 
 
 /* Analytics Sidebar */

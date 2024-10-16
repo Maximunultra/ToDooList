@@ -7,7 +7,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const dueDateInput = document.getElementById("due-date-input");
     const categorySelect = document.getElementById("Category-select");
     const taskList = document.getElementById("taskList");
-    const analyticsOutput = document.getElementById("analytics-output");
+    const categoryStats = document.getElementById("category-stats");
+    const chartCanvas = document.getElementById("categoryCompletionChart");
+    let categoryChart;
 
     // Load categories
     function loadCategories() {
@@ -66,10 +68,21 @@ document.addEventListener("DOMContentLoaded", function () {
     function loadTasks() {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         taskList.innerHTML = "";
-        tasks.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+        tasks.sort((a, b) => {
+            if (a.completed === b.completed) {
+                return new Date(a.dueDate) - new Date(b.dueDate);
+            }
+            return a.completed - b.completed;
+        });
+
         tasks.forEach((task, index) => {
             const taskItem = document.createElement("div");
             taskItem.classList.add('task-item');
+
+            // Add the 'completed-task' class if the task is completed
+            if (task.completed) {
+                taskItem.classList.add('completed-task');
+            }
 
             taskItem.innerHTML = `
                 <input type="checkbox" class="complete-task" data-index="${index}" ${task.completed ? 'checked' : ''}>
@@ -79,6 +92,14 @@ document.addEventListener("DOMContentLoaded", function () {
             `;
 
             taskList.appendChild(taskItem);
+        });
+
+        const checkboxes = document.querySelectorAll(".complete-task");
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener("change", function () {
+                const index = this.getAttribute("data-index");
+                toggleTaskCompletion(index, this.checked);
+            });
         });
 
         const deleteButtons = document.querySelectorAll(".delete-task");
@@ -104,12 +125,14 @@ document.addEventListener("DOMContentLoaded", function () {
         tasks.splice(index, 1);
         localStorage.setItem("tasks", JSON.stringify(tasks));
         loadTasks();
+        updateAnalytics();
     }
 
     function toggleTaskCompletion(index, isCompleted) {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         tasks[index].completed = isCompleted;
         localStorage.setItem("tasks", JSON.stringify(tasks));
+        loadTasks();
         updateAnalytics();
     }
 
@@ -130,8 +153,89 @@ document.addEventListener("DOMContentLoaded", function () {
             saveTask(task);
             loadTasks();
             taskForm.reset();
+            updateAnalytics();
         }
     });
+
+    function updateAnalytics() {
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        const categories = JSON.parse(localStorage.getItem("categories")) || [];
+        const categoryCounts = categories.map(category => ({
+            category,
+            total: 0,
+            completed: 0
+        }));
+
+        tasks.forEach(task => {
+            task.categories.forEach(category => {
+                const categoryData = categoryCounts.find(c => c.category === category);
+                if (categoryData) {
+                    categoryData.total += 1;
+                    if (task.completed) {
+                        categoryData.completed += 1;
+                    }
+                }
+            });
+        });
+
+        const labels = categoryCounts.map(c => c.category);
+        const completionRates = categoryCounts.map(c => (c.completed / (c.total || 1)) * 100);
+        renderChart(labels, completionRates);
+        displayCategoryStats(categoryCounts);
+    }
+
+    function renderChart(labels, completionRates) {
+        if (categoryChart) {
+            categoryChart.destroy();
+        }
+
+        categoryChart = new Chart(chartCanvas, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Completion Rate (%)',
+                    data: completionRates,
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Completion Rate: ${context.parsed.y.toFixed(2)}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function displayCategoryStats(categoryCounts) {
+        categoryStats.innerHTML = "";
+        categoryCounts.forEach(c => {
+            const completionRate = c.total > 0 ? (c.completed / c.total) * 100 : 0;
+            const statItem = document.createElement("div");
+            statItem.textContent = `${c.category}: ${completionRate.toFixed(2)}% completed (${c.completed}/${c.total})`;
+            categoryStats.appendChild(statItem);
+        });
+    }
+
+    // Initial load
     loadCategories();
     loadTasks();
+    updateAnalytics();
 });

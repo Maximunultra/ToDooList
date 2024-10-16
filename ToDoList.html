@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="ToDoList.css">
 </head>
 <body>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <div id="app">
 
     <aside id="Category-sidebar" class="Category-sidebar">
@@ -49,10 +50,12 @@
   
     <aside class="analytics-sidebar">
       <h2>Analytics</h2>
+      <canvas id="categoryCompletionChart" width="400" height="200"></canvas>
       <div id="category-stats"></div>
-    </aside>
+  </aside>
+  
 </div>
-
+  
   <script src="ToDoList.js"></script>
 </body>
 </html>
