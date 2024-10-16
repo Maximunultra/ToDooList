@@ -18,104 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalClose = document.getElementById("modalClose");
     const modalCancel = document.getElementById("modalCancel");
 
-    let editingTaskIndex = null; 
-  
-    function openEditModal(task, index) {
-        editingTaskIndex = index; 
-        editTaskInput.value = task.name;
-        editDueDateInput.value = task.dueDate;
-        editCategorySelect.innerHTML = "";
-        const categories = JSON.parse(localStorage.getItem("categories")) || [];
-
-        categories.forEach(category => {
-            const option = document.createElement("option");
-            option.value = category;
-            option.textContent = category;
-            option.selected = task.categories.includes(category);
-            editCategorySelect.appendChild(option);
-        });
-
-        editTaskModal.style.display = "block"; 
-    }
-
-    
-    function closeEditModal() {
-        editTaskModal.style.display = "none"; 
-        editingTaskIndex = null; 
-    }
-
-    
-    modalClose.addEventListener("click", closeEditModal);
-    modalCancel.addEventListener("click", closeEditModal);
-
-
-    editTaskForm.addEventListener("submit", function(event) {
-        event.preventDefault();
-        const updatedTask = {
-            name: editTaskInput.value.trim(),
-            dueDate: editDueDateInput.value,
-            categories: Array.from(editCategorySelect.selectedOptions).map(option => option.value),
-            completed: false 
-        };
-
-        const confirmEdit = confirm("Are you sure you want to save these changes?");
-        if (confirmEdit && editingTaskIndex !== null) {
-            const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-            tasks[editingTaskIndex] = updatedTask; // Update the task
-            localStorage.setItem("tasks", JSON.stringify(tasks));
-            loadTasks(); // Reload the task list
-            closeEditModal(); // Close the modal
-            updateAnalytics(); // Update analytics
-        }
-    });
-
-
-    function loadTasks() {
-        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        taskList.innerHTML = "";
-        tasks.sort((a, b) => {
-            if (a.completed === b.completed) {
-                return new Date(a.dueDate) - new Date(b.dueDate);
-            }
-            return a.completed - b.completed;
-        });
-
-        tasks.forEach((task, index) => {
-            const taskItem = document.createElement("div");
-            taskItem.classList.add('task-item');
-
-            if (task.completed) {
-                taskItem.classList.add('completed-task');
-            }
-
-            taskItem.innerHTML = `
-                <input type="checkbox" class="complete-task" data-index="${index}" ${task.completed ? 'checked' : ''}>
-                <strong>Name: ${task.name} | Due: ${task.dueDate}</strong>
-                <div>Category: ${task.categories.join(", ")}</div>
-                <button class="edit-task" data-index="${index}">Edit</button>
-            `;
-
-            taskList.appendChild(taskItem);
-        });
-
-        const checkboxes = document.querySelectorAll(".complete-task");
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener("change", function () {
-                const index = this.getAttribute("data-index");
-                toggleTaskCompletion(index, this.checked);
-            });
-        });
-
-        const editButtons = document.querySelectorAll(".edit-task");
-        editButtons.forEach(button => {
-            button.addEventListener("click", function () {
-                const index = this.getAttribute("data-index");
-                const task = JSON.parse(localStorage.getItem("tasks"))[index];
-                openEditModal(task, index); // Open the modal with the selected task
-            });
-        });
-
-    }
+    let editingTaskIndex = null;
 
     function loadCategories() {
         const categories = JSON.parse(localStorage.getItem("categories")) || [];
@@ -170,6 +73,52 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    function loadTasks() {
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        taskList.innerHTML = "";
+        tasks.sort((a, b) => {
+            if (a.completed === b.completed) {
+                return new Date(a.dueDate) - new Date(b.dueDate);
+            }
+            return a.completed - b.completed;
+        });
+
+        tasks.forEach((task, index) => {
+            const taskItem = document.createElement("div");
+            taskItem.classList.add('task-item');
+
+            if (task.completed) {
+                taskItem.classList.add('completed-task');
+            }
+
+            taskItem.innerHTML = `
+                <input type="checkbox" class="complete-task" data-index="${index}" ${task.completed ? 'checked' : ''}>
+                <strong>Name: ${task.name} | Due: ${task.dueDate}</strong>
+                <div>Category: ${task.categories.join(", ")}</div>
+                <button class="edit-task" data-index="${index}" ${task.completed ? 'disabled' : ''}>Edit</button>
+            `;
+
+            taskList.appendChild(taskItem);
+        });
+
+        const checkboxes = document.querySelectorAll(".complete-task");
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener("change", function () {
+                const index = this.getAttribute("data-index");
+                toggleTaskCompletion(index, this.checked);
+            });
+        });
+
+        const editButtons = document.querySelectorAll(".edit-task");
+        editButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const index = this.getAttribute("data-index");
+                const task = JSON.parse(localStorage.getItem("tasks"))[index];
+                openEditModal(task, index);
+            });
+        });
+    }
+
     function saveTask(task) {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         tasks.push(task);
@@ -205,7 +154,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Analytics
     function updateAnalytics() {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         const categories = JSON.parse(localStorage.getItem("categories")) || [];
@@ -282,6 +230,52 @@ document.addEventListener("DOMContentLoaded", function () {
             categoryStats.appendChild(statItem);
         });
     }
+
+    function openEditModal(task, index) {
+        editingTaskIndex = index; 
+        editTaskInput.value = task.name;
+        editDueDateInput.value = task.dueDate;
+        editCategorySelect.innerHTML = "";
+        const categories = JSON.parse(localStorage.getItem("categories")) || [];
+
+        categories.forEach(category => {
+            const option = document.createElement("option");
+            option.value = category;
+            option.textContent = category;
+            option.selected = task.categories.includes(category);
+            editCategorySelect.appendChild(option);
+        });
+
+        editTaskModal.style.display = "block";
+    }
+
+    function closeEditModal() {
+        editTaskModal.style.display = "none"; 
+        editingTaskIndex = null; 
+    }
+
+    modalClose.addEventListener("click", closeEditModal);
+    modalCancel.addEventListener("click", closeEditModal);
+
+    editTaskForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        const updatedTask = {
+            name: editTaskInput.value.trim(),
+            dueDate: editDueDateInput.value,
+            categories: Array.from(editCategorySelect.selectedOptions).map(option => option.value),
+            completed: false 
+        };
+
+        const confirmEdit = confirm("Are you sure you want to save these changes?");
+        if (confirmEdit && editingTaskIndex !== null) {
+            const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            tasks[editingTaskIndex] = updatedTask; 
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+            loadTasks(); 
+            closeEditModal();
+            updateAnalytics();
+        }
+    });
 
     // Initial load
     loadCategories();
