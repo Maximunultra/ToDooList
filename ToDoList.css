@@ -97,65 +97,112 @@ body {
 
 /* Task Form */
 
-.task-form {
-  width: 500px;
+main {
   background-color: #fff;
   padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  height: 100%; /* Set the height to 100% */
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+main h1{
+  text-align: center;
+  font-size: 28px;
+}
+.task-form {
+  margin-bottom: 30px;
 }
 
 .task-name {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-.form-group {
+  gap: 20px;
   margin-bottom: 20px;
 }
 
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
 .form-group label {
-  display: block;
-  margin-bottom: 10px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+#task-input, #due-date-input, #Category-select {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  outline: none;
 }
 
 #task-input, #due-date-input {
   width: 100%;
-  height: 40px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
 
 #Category-select {
-  width: 100%;
-  height: 40px;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  font-size: 16px;
+  width: 100%;
+  height: auto;
+}
+
+button[type="submit"] {
+  padding: 10px 0;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 16px;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
 }
 
 /* Task List */
-
 #taskList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  height: calc(100% - 120px); /* Set the height to 100% minus the height of the form and heading */
-  overflow-y: auto; /* Add a scrollbar if the content is too long */
+  margin-top: 20px;
 }
 
-#taskList li {
+.task-item {
+  display: flex;
+  justify-content: start;
+  align-items: center;
   padding: 10px;
-  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 18px;
+  gap: 10px;
 }
 
-#taskList li:last-child {
-  border-bottom: none;
+.task-item label {
+  display: inline-block;
+  margin-right: 10px;
+  color: #333;
 }
+
+.task-due-date {
+  color: #6c757d;
+  font-size: 16px;
+}
+
+.edit-task {
+  padding: 6px 12px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
 
 /* Analytics Sidebar */
 
