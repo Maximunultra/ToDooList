@@ -10,8 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const categoryStats = document.getElementById("category-stats");
     const chartCanvas = document.getElementById("categoryCompletionChart");
     let categoryChart;
-
-    // Edit Task Modal elements
     const editTaskModal = document.getElementById("editTaskModal");
     const editTaskForm = document.getElementById("editTaskForm");
     const editTaskInput = document.getElementById("edit-task-input");
@@ -20,46 +18,44 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalClose = document.getElementById("modalClose");
     const modalCancel = document.getElementById("modalCancel");
 
-    let editingTaskIndex = null; // Store the index of the task being edited
-
-    // Function to open the edit modal
+    let editingTaskIndex = null; 
+  
     function openEditModal(task, index) {
-        editingTaskIndex = index; // Set the index of the task to be edited
+        editingTaskIndex = index; 
         editTaskInput.value = task.name;
         editDueDateInput.value = task.dueDate;
-        editCategorySelect.innerHTML = ""; // Clear existing options
+        editCategorySelect.innerHTML = "";
         const categories = JSON.parse(localStorage.getItem("categories")) || [];
 
-        // Populate categories
         categories.forEach(category => {
             const option = document.createElement("option");
             option.value = category;
             option.textContent = category;
-            option.selected = task.categories.includes(category); // Mark as selected if it's in the task's categories
+            option.selected = task.categories.includes(category);
             editCategorySelect.appendChild(option);
         });
 
-        editTaskModal.style.display = "block"; // Show the modal
+        editTaskModal.style.display = "block"; 
     }
 
-    // Function to close the edit modal
+    
     function closeEditModal() {
-        editTaskModal.style.display = "none"; // Hide the modal
-        editingTaskIndex = null; // Reset the index
+        editTaskModal.style.display = "none"; 
+        editingTaskIndex = null; 
     }
 
-    // Event listener for the modal close button
+    
     modalClose.addEventListener("click", closeEditModal);
     modalCancel.addEventListener("click", closeEditModal);
 
-    // Event listener for the edit task form submission
+
     editTaskForm.addEventListener("submit", function(event) {
         event.preventDefault();
         const updatedTask = {
             name: editTaskInput.value.trim(),
             dueDate: editDueDateInput.value,
             categories: Array.from(editCategorySelect.selectedOptions).map(option => option.value),
-            completed: false // Keep the completion state as false, or modify as needed
+            completed: false 
         };
 
         const confirmEdit = confirm("Are you sure you want to save these changes?");
@@ -73,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Load tasks function
+
     function loadTasks() {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         taskList.innerHTML = "";
@@ -121,7 +117,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
-    // Load categories function
     function loadCategories() {
         const categories = JSON.parse(localStorage.getItem("categories")) || [];
         categoryList.innerHTML = "";
@@ -175,7 +170,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Task management functions
     function saveTask(task) {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         tasks.push(task);
@@ -211,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Analytics and chart functions
+    // Analytics
     function updateAnalytics() {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         const categories = JSON.parse(localStorage.getItem("categories")) || [];
