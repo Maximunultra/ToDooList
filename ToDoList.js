@@ -76,48 +76,44 @@ document.addEventListener("DOMContentLoaded", function () {
     function loadTasks() {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         taskList.innerHTML = "";
-        tasks.sort((a, b) => {
-            if (a.completed === b.completed) {
-                return new Date(a.dueDate) - new Date(b.dueDate);
-            }
-            return a.completed - b.completed;
-        });
-
+    
         tasks.forEach((task, index) => {
             const taskItem = document.createElement("div");
             taskItem.classList.add('task-item');
-
+    
+            // Apply the completed-task class if the task is completed
             if (task.completed) {
                 taskItem.classList.add('completed-task');
             }
-
+    
             taskItem.innerHTML = `
                 <input type="checkbox" class="complete-task" data-index="${index}" ${task.completed ? 'checked' : ''}>
                 <strong>Name: ${task.name} | Due: ${task.dueDate}</strong>
                 <div>Category: ${task.categories.join(", ")}</div>
                 <button class="edit-task" data-index="${index}" ${task.completed ? 'disabled' : ''}>Edit</button>
             `;
-
+    
             taskList.appendChild(taskItem);
         });
-
+    
         const checkboxes = document.querySelectorAll(".complete-task");
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener("change", function () {
                 const index = this.getAttribute("data-index");
-                toggleTaskCompletion(index, this.checked);
+                toggleTaskCompletion(index); // Pass the task index to toggle
             });
         });
 
-        const editButtons = document.querySelectorAll(".edit-task");
-        editButtons.forEach(button => {
-            button.addEventListener("click", function () {
-                const index = this.getAttribute("data-index");
-                const task = JSON.parse(localStorage.getItem("tasks"))[index];
-                openEditModal(task, index);
-            });
+    const editButtons = document.querySelectorAll(".edit-task");
+    editButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const index = this.getAttribute("data-index");
+            const task = JSON.parse(localStorage.getItem("tasks"))[index];
+            openEditModal(task, index);
         });
-    }
+    });
+}
+
 
     function saveTask(task) {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -125,12 +121,21 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem("tasks", JSON.stringify(tasks));
     }
 
-    function toggleTaskCompletion(index, isCompleted) {
-        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        tasks[index].completed = isCompleted;
+    function toggleTaskCompletion(index) {
+        let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    
+        // Toggle the completion status
+        tasks[index].completed = !tasks[index].completed;
+    
+        // Sort tasks: Incomplete tasks first, followed by completed tasks
+        tasks.sort((a, b) => a.completed - b.completed);
+    
+        // Save the sorted tasks back to localStorage
         localStorage.setItem("tasks", JSON.stringify(tasks));
-        loadTasks();
-        updateAnalytics();
+    
+        // Re-render the task list and analytics
+        loadTasks(); // Ensure this properly renders the task list
+        updateAnalytics(); // Ensure this updates your task analytics
     }
 
     taskForm.addEventListener("submit", function (event) {
