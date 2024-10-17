@@ -143,32 +143,54 @@ document.addEventListener("DOMContentLoaded", function () {
         const newTask = taskInput.value.trim();
         const dueDate = dueDateInput.value;
         const selectedCategories = Array.from(categorySelect.selectedOptions).map(option => option.value);
-
+    
         if (newTask) {
+            // Check if the task name already exists
+            const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            const taskExists = tasks.some(task => task.name.toLowerCase() === newTask.toLowerCase());
+    
+            if (taskExists) {
+                alert("A task with this name already exists. Please choose a different name.");
+                return;
+            }
+    
             const task = {
                 name: newTask,
                 dueDate: dueDate,
                 categories: selectedCategories,
                 completed: false
             };
-
+    
             saveTask(task);
             loadTasks();
             taskForm.reset();
             updateAnalytics();
         }
     });
+    
 
     function updateAnalytics() {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         const categories = JSON.parse(localStorage.getItem("categories")) || [];
+    
+        // Calculate category-specific counts
         const categoryCounts = categories.map(category => ({
             category,
             total: 0,
             completed: 0
         }));
-
+    
+        let overallTotal = 0;
+        let overallCompleted = 0;
+    
         tasks.forEach(task => {
+            // Update overall counts
+            overallTotal += 1;
+            if (task.completed) {
+                overallCompleted += 1;
+            }
+    
+            // Update counts for each category the task belongs to
             task.categories.forEach(category => {
                 const categoryData = categoryCounts.find(c => c.category === category);
                 if (categoryData) {
@@ -179,13 +201,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
         });
-
-        const labels = categoryCounts.map(c => c.category);
-        const completionRates = categoryCounts.map(c => (c.completed / (c.total || 1)) * 100);
+    
+        // Calculate completion rates
+        const labels = ["Overall", ...categoryCounts.map(c => c.category)];
+        const completionRates = [
+            (overallCompleted / (overallTotal || 1)) * 100,
+            ...categoryCounts.map(c => (c.completed / (c.total || 1)) * 100)
+        ];
+    
         renderChart(labels, completionRates);
-        displayCategoryStats(categoryCounts);
+        displayCategoryStats([{ category: "Overall", total: overallTotal, completed: overallCompleted }, ...categoryCounts]);
     }
-
+    
     function renderChart(labels, completionRates) {
         if (categoryChart) {
             categoryChart.destroy();
