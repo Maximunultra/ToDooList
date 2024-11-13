@@ -27,14 +27,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
         categories.forEach((category, index) => {
             const categoryItem = document.createElement("div");
-            categoryItem.classList.add("category-item");
+            categoryItem.classList.add("category-item", "flex", "justify-between", "items-center", "p-2", "bg-gray-100", "rounded", "mb-2");
 
             const categoryName = document.createElement("span");
             categoryName.textContent = category;
+            categoryName.classList.add("text-gray-700", "font-medium");
 
             const deleteButton = document.createElement("button");
             deleteButton.textContent = "Delete";
-            deleteButton.classList.add("delete-category");
+            deleteButton.classList.add("delete-category", "text-red-500", "hover:underline");
 
             deleteButton.addEventListener("click", function () {
                 const confirmDelete = confirm(`Are you sure you want to delete the category: "${category}"?`);
@@ -79,18 +80,21 @@ document.addEventListener("DOMContentLoaded", function () {
     
         tasks.forEach((task, index) => {
             const taskItem = document.createElement("div");
-            taskItem.classList.add('task-item');
+            taskItem.classList.add('task-item', 'p-4', 'bg-white', 'shadow', 'rounded', 'mb-4', 'flex', 'justify-between', 'items-start');
     
             // Apply the completed-task class if the task is completed
             if (task.completed) {
-                taskItem.classList.add('completed-task');
+                taskItem.classList.add('bg-green-100');
             }
     
             taskItem.innerHTML = `
-                <input type="checkbox" class="complete-task" data-index="${index}" ${task.completed ? 'checked' : ''}>
-                <strong>Name: ${task.name} | Due: ${task.dueDate}</strong>
-                <div>Category: ${task.categories.join(", ")}</div>
-                <button class="edit-task" data-index="${index}" ${task.completed ? 'disabled' : ''}>Edit</button>
+                <input type="checkbox" class="complete-task mr-3" data-index="${index}" ${task.completed ? 'checked' : ''}>
+                <div class="flex-1">
+                    <strong class="block text-lg font-semibold">Name: ${task.name}</strong>
+                    <span class="text-gray-500">Due: ${task.dueDate}</span>
+                    <div class="text-sm text-gray-600">Category: ${task.categories.join(", ")}</div>
+                </div>
+                <button class="edit-task text-blue-500 hover:underline ${task.completed ? 'opacity-50 cursor-not-allowed' : ''}" data-index="${index}" ${task.completed ? 'disabled' : ''}>Edit</button>
             `;
     
             taskList.appendChild(taskItem);
@@ -100,20 +104,19 @@ document.addEventListener("DOMContentLoaded", function () {
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener("change", function () {
                 const index = this.getAttribute("data-index");
-                toggleTaskCompletion(index); // Pass the task index to toggle
+                toggleTaskCompletion(index);
             });
         });
 
-    const editButtons = document.querySelectorAll(".edit-task");
-    editButtons.forEach(button => {
-        button.addEventListener("click", function () {
-            const index = this.getAttribute("data-index");
-            const task = JSON.parse(localStorage.getItem("tasks"))[index];
-            openEditModal(task, index);
+        const editButtons = document.querySelectorAll(".edit-task");
+        editButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const index = this.getAttribute("data-index");
+                const task = JSON.parse(localStorage.getItem("tasks"))[index];
+                openEditModal(task, index);
+            });
         });
-    });
-}
-
+    }
 
     function saveTask(task) {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -123,19 +126,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function toggleTaskCompletion(index) {
         let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    
-        // Toggle the completion status
         tasks[index].completed = !tasks[index].completed;
-    
-        // Sort tasks: Incomplete tasks first, followed by completed tasks
         tasks.sort((a, b) => a.completed - b.completed);
-    
-        // Save the sorted tasks back to localStorage
         localStorage.setItem("tasks", JSON.stringify(tasks));
-    
-        // Re-render the task list and analytics
-        loadTasks(); // Ensure this properly renders the task list
-        updateAnalytics(); // Ensure this updates your task analytics
+        loadTasks();
+        updateAnalytics();
     }
 
     taskForm.addEventListener("submit", function (event) {
@@ -145,7 +140,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const selectedCategories = Array.from(categorySelect.selectedOptions).map(option => option.value);
     
         if (newTask) {
-            // Check if the task name already exists
             const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
             const taskExists = tasks.some(task => task.name.toLowerCase() === newTask.toLowerCase());
     
@@ -167,13 +161,11 @@ document.addEventListener("DOMContentLoaded", function () {
             updateAnalytics();
         }
     });
-    
 
     function updateAnalytics() {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         const categories = JSON.parse(localStorage.getItem("categories")) || [];
     
-        // Calculate category-specific counts
         const categoryCounts = categories.map(category => ({
             category,
             total: 0,
@@ -184,13 +176,11 @@ document.addEventListener("DOMContentLoaded", function () {
         let overallCompleted = 0;
     
         tasks.forEach(task => {
-            // Update overall counts
             overallTotal += 1;
             if (task.completed) {
                 overallCompleted += 1;
             }
     
-            // Update counts for each category the task belongs to
             task.categories.forEach(category => {
                 const categoryData = categoryCounts.find(c => c.category === category);
                 if (categoryData) {
@@ -202,7 +192,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     
-        // Calculate completion rates
         const labels = ["Overall", ...categoryCounts.map(c => c.category)];
         const completionRates = [
             (overallCompleted / (overallTotal || 1)) * 100,
@@ -259,6 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const completionRate = c.total > 0 ? (c.completed / c.total) * 100 : 0;
             const statItem = document.createElement("div");
             statItem.textContent = `${c.category}: ${completionRate.toFixed(2)}% completed (${c.completed}/${c.total})`;
+            statItem.classList.add("text-gray-700", "font-semibold", "mb-2");
             categoryStats.appendChild(statItem);
         });
     }
